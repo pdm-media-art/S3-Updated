@@ -44,18 +44,64 @@ const pageTitles = {
   matrix: { title: "Risikomatrix", breadcrumb: "Matrix / Visuelle Darstellung" },
 };
 
+function navigateToPage(target) {
+  if (!target) return;
+  
+  // Update nav buttons
+  const navButtons = document.querySelectorAll(".nav-item");
+  navButtons.forEach((b) => b.classList.remove("active"));
+  const activeBtn = document.querySelector(`.nav-item[data-page="${target}"]`);
+  if (activeBtn) activeBtn.classList.add("active");
+  
+  // Update pages
+  const pages = document.querySelectorAll(".page");
+  pages.forEach((p) => {
+    if (p.id === `page-${target}`) {
+      p.classList.add("active");
+      p.style.display = "block";
+    } else {
+      p.classList.remove("active");
+      p.style.display = "none";
+    }
+  });
+  
+  // Update page title
+  const pageInfo = pageTitles[target];
+  if (pageInfo) {
+    const titleEl = document.getElementById("pageTitle");
+    const breadcrumbEl = document.querySelector(".page-breadcrumb");
+    if (titleEl) titleEl.textContent = pageInfo.title;
+    if (breadcrumbEl) breadcrumbEl.textContent = pageInfo.breadcrumb;
+  }
+  
+  // Special handling for matrix page
+  if (target === "matrix") {
+    renderRiskMatrix();
+    renderMatrixRiskList();
+  }
+  
+  // Redraw charts when returning to dashboard
+  if (target === "dashboard") {
+    setTimeout(() => {
+      drawSecurityRadar();
+      drawTrendChart();
+    }, 100);
+  }
+}
+
 function initNavigation() {
-  $$(".nav-item").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const target = btn.dataset.page;
-      $$(".nav-item").forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-      $$(".page").forEach((p) => p.classList.toggle("active", p.id === `page-${target}`));
-      const pageInfo = pageTitles[target];
-      if (pageInfo) { $("#pageTitle").textContent = pageInfo.title; $(".page-breadcrumb").textContent = pageInfo.breadcrumb; }
-      if (target === "matrix") { renderRiskMatrix(); renderMatrixRiskList(); }
+  const navButtons = document.querySelectorAll(".nav-item");
+  navButtons.forEach((btn) => {
+    btn.addEventListener("click", function(e) {
+      e.preventDefault();
+      const target = this.getAttribute("data-page");
+      console.log("Navigation clicked:", target);
+      navigateToPage(target);
     });
   });
+  
+  // Ensure dashboard is visible on load
+  navigateToPage("dashboard");
 }
 
 function updateDashboard() {
@@ -392,9 +438,48 @@ function drawTrendChart() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  initNavigation(); initRiskModal(); initRiskFilters(); initAssetModal(); initAssetFilters(); initIncidentModal(); initIncidentFilters();
-  seedDemoData(); renderRiskTable(); renderRiskMatrix(); renderMatrixRiskList(); renderAssetTable(); renderIncidentTable(); updateDashboard();
-  drawSecurityRadar(); drawTrendChart();
-  let resizeTimeout; window.addEventListener("resize", () => { clearTimeout(resizeTimeout); resizeTimeout = setTimeout(() => { drawSecurityRadar(); drawTrendChart(); }, 250); });
-  setTimeout(() => { showToast("success", "Willkommen", "SecureStay Analytics ist bereit"); }, 500);
+  console.log("SecureStay Analytics initializing...");
+  
+  // Initialize all components
+  initNavigation();
+  initRiskModal();
+  initRiskFilters();
+  initAssetModal();
+  initAssetFilters();
+  initIncidentModal();
+  initIncidentFilters();
+  
+  // Load demo data
+  seedDemoData();
+  
+  // Render all tables and components
+  renderRiskTable();
+  renderRiskMatrix();
+  renderMatrixRiskList();
+  renderAssetTable();
+  renderIncidentTable();
+  updateDashboard();
+  
+  // Draw charts
+  setTimeout(() => {
+    drawSecurityRadar();
+    drawTrendChart();
+  }, 100);
+  
+  // Resize handler
+  let resizeTimeout;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      drawSecurityRadar();
+      drawTrendChart();
+    }, 250);
+  });
+  
+  // Welcome message
+  setTimeout(() => {
+    showToast("success", "Willkommen", "SecureStay Analytics ist bereit");
+  }, 500);
+  
+  console.log("SecureStay Analytics ready!");
 });
