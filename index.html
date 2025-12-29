@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>SecureStay Analytics – Enterprise Security Intelligence</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- Ambient Background Effects -->
+  <div class="ambient-bg">
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+    <div class="ambient-orb orb-3"></div>
+    <div class="grid-overlay"></div>
+  </div>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <div class="logo-icon">
+            <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="2" width="36" height="36" rx="8" stroke="url(#logoGrad)" stroke-width="2.5"/>
+              <path d="M20 10L28 15V25L20 30L12 25V15L20 10Z" fill="url(#logoGrad)" opacity="0.2"/>
+              <path d="M20 10L28 15V25L20 30L12 25V15L20 10Z" stroke="url(#logoGrad)" stroke-width="1.5"/>
+              <circle cx="20" cy="20" r="4" fill="url(#logoGrad)"/>
+              <defs>
+                <linearGradient id="logoGrad" x1="0" y1="0" x2="40" y2="40">
+                  <stop offset="0%" stop-color="#6366f1"/>
+                  <stop offset="100%" stop-color="#a855f7"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <div class="logo-text">
+            <span class="logo-title">SecureStay</span>
+            <span class="logo-subtitle">Analytics</span>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <span class="nav-section-title">Übersicht</span>
+          <button class="nav-item active" data-page="dashboard">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7" rx="1"/>
+              <rect x="14" y="3" width="7" height="7" rx="1"/>
+              <rect x="3" y="14" width="7" height="7" rx="1"/>
+              <rect x="14" y="14" width="7" height="7" rx="1"/>
+            </svg>
+            <span>Dashboard</span>
+            <span class="nav-badge pulse">Live</span>
+          </button>
+        </div>
+
+        <div class="nav-section">
+          <span class="nav-section-title">Analyse</span>
+          <button class="nav-item" data-page="threats">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
+            <span>Threat Sheet</span>
+            <span class="nav-count" id="navRiskCount">0</span>
+          </button>
+          <button class="nav-item" data-page="assets">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+            </svg>
+            <span>Assets</span>
+            <span class="nav-count" id="navAssetCount">0</span>
+          </button>
+          <button class="nav-item" data-page="incidents">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            <span>Incidents</span>
+            <span class="nav-count warning" id="navIncidentCount">0</span>
+          </button>
+        </div>
+
+        <div class="nav-section">
+          <span class="nav-section-title">Matrix</span>
+          <button class="nav-item" data-page="matrix">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h4v4H4zM14 4h4v4h-4zM4 14h4v4H4zM14 14h4v4h-4z"/>
+              <path d="M10 4h4M4 10h4M10 14h4M14 10h4M10 4v4M10 14v4"/>
+            </svg>
+            <span>Risikomatrix</span>
+          </button>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="system-status">
+          <div class="status-indicator online"></div>
+          <span>System aktiv</span>
+        </div>
+        <div class="version-info">v2.4.0 Enterprise</div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Bar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <h1 id="pageTitle" class="page-title">Dashboard</h1>
+          <span class="page-breadcrumb">Übersicht / Sicherheitsanalyse</span>
+        </div>
+        <div class="topbar-right">
+          <div class="search-box">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input type="text" id="globalSearch" placeholder="Suchen..." />
+          </div>
+          <button class="topbar-btn notification-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/>
+            </svg>
+            <span class="notification-badge" id="notificationBadge">3</span>
+          </button>
+          <div class="user-avatar">
+            <span>SA</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Container -->
+      <div class="page-container">
+        <!-- Dashboard Page -->
+        <section id="page-dashboard" class="page active">
+          <!-- KPI Cards -->
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-label">Sicherheitsindex Umfeld</span>
+                <div class="kpi-trend up">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M7 17l5-5 5 5M7 7l5 5 5-5"/>
+                  </svg>
+                  +2.4%
+                </div>
+              </div>
+              <div class="kpi-value" id="envIndex">–</div>
+              <div class="kpi-bar">
+                <div class="kpi-bar-fill" id="envIndexBar" style="width: 0%"></div>
+              </div>
+              <span class="kpi-desc">von 100 Punkten</span>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-label">Sicherheitsindex Objekt</span>
+                <div class="kpi-trend up">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M7 17l5-5 5 5M7 7l5 5 5-5"/>
+                  </svg>
+                  +1.8%
+                </div>
+              </div>
+              <div class="kpi-value" id="objIndex">–</div>
+              <div class="kpi-bar">
+                <div class="kpi-bar-fill" id="objIndexBar" style="width: 0%"></div>
+              </div>
+              <span class="kpi-desc">von 100 Punkten</span>
+            </div>
+
+            <div class="kpi-card warning">
+              <div class="kpi-header">
+                <span class="kpi-label">Offene Risiken</span>
+                <div class="kpi-icon warning">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="kpi-value" id="openRisks">0</div>
+              <span class="kpi-desc">Erfordern Aufmerksamkeit</span>
+            </div>
+
+            <div class="kpi-card danger">
+              <div class="kpi-header">
+                <span class="kpi-label">Offene Incidents</span>
+                <div class="kpi-icon danger">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="kpi-value" id="openIncidents">0</div>
+              <span class="kpi-desc">Aktive Vorfälle</span>
+            </div>
+          </div>
+
+          <!-- Charts Row -->
+          <div class="dashboard-grid">
+            <div class="dashboard-card radar-card">
+              <div class="card-header">
+                <h3>Sicherheitsdimensionen</h3>
+                <span class="card-badge">Echtzeit</span>
+              </div>
+              <div class="radar-container">
+                <canvas id="securityRadar"></canvas>
+              </div>
+              <div class="radar-legend" id="radarLegend"></div>
+            </div>
+
+            <div class="dashboard-card">
+              <div class="card-header">
+                <h3>Risiko-Trend (30 Tage)</h3>
+                <div class="card-actions">
+                  <button class="card-action-btn active" data-range="30">30T</button>
+                  <button class="card-action-btn" data-range="90">90T</button>
+                  <button class="card-action-btn" data-range="365">1J</button>
+                </div>
+              </div>
+              <div class="chart-container">
+                <canvas id="trendChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Activity -->
+          <div class="dashboard-card activity-card">
+            <div class="card-header">
+              <h3>Aktuelle Aktivitäten</h3>
+              <a href="#" class="card-link" data-action="showAllIncidents">Alle anzeigen →</a>
+            </div>
+            <div class="activity-list" id="activityList">
+              <!-- Dynamisch gefüllt -->
+            </div>
+          </div>
+        </section>
+
+        <!-- Threats Page -->
+        <section id="page-threats" class="page">
+          <div class="page-header">
+            <div class="page-header-left">
+              <h2>Threat Sheet</h2>
+              <p class="page-description">Risikomanagement und Bedrohungsanalyse</p>
+            </div>
+            <button id="btnAddRisk" class="btn btn-primary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14M5 12h14"/>
+              </svg>
+              Neues Risiko
+            </button>
+          </div>
+
+          <div class="filters-bar">
+            <div class="filter-group">
+              <div class="search-input">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"/>
+                  <path d="m21 21-4.35-4.35"/>
+                </svg>
+                <input type="text" id="riskSearch" placeholder="Risiko suchen..." />
+              </div>
+              <select id="riskTypeFilter" class="filter-select">
+                <option value="">Alle Risikoarten</option>
+                <option value="Security">Security</option>
+                <option value="Safety">Safety</option>
+                <option value="Compliance">Compliance</option>
+                <option value="Datenschutz">Datenschutz</option>
+                <option value="Brandschutz">Brandschutz</option>
+                <option value="IT">IT</option>
+              </select>
+              <select id="riskStatusFilter" class="filter-select">
+                <option value="">Alle Status</option>
+                <option value="Not Started">Not Started</option>
+                <option value="Ongoing">Ongoing</option>
+                <option value="Erledigt">Erledigt</option>
+              </select>
+            </div>
+            <div class="filter-info">
+              <span id="riskFilterCount">0</span> Risiken gefunden
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th class="th-sortable" data-sort="id">ID</th>
+                  <th class="th-sortable" data-sort="name">Risiko</th>
+                  <th class="th-sortable" data-sort="type">Risikoart</th>
+                  <th class="th-sortable" data-sort="priority">Priorität</th>
+                  <th class="th-sortable" data-sort="status">Status</th>
+                  <th class="th-sortable" data-sort="riskScore">Risikowert</th>
+                  <th>Aktionen</th>
+                </tr>
+              </thead>
+              <tbody id="riskTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Assets Page -->
+        <section id="page-assets" class="page">
+          <div class="page-header">
+            <div class="page-header-left">
+              <h2>Assets & Vulnerabilität</h2>
+              <p class="page-description">Inventar und Schwachstellenanalyse</p>
+            </div>
+            <button id="btnAddAsset" class="btn btn-primary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14M5 12h14"/>
+              </svg>
+              Neues Asset
+            </button>
+          </div>
+
+          <div class="filters-bar">
+            <div class="filter-group">
+              <div class="search-input">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"/>
+                  <path d="m21 21-4.35-4.35"/>
+                </svg>
+                <input type="text" id="assetSearch" placeholder="Asset suchen..." />
+              </div>
+              <select id="assetZoneFilter" class="filter-select">
+                <option value="">Alle Zonen</option>
+                <option value="Rot">🔴 Rot (Kritisch)</option>
+                <option value="Gelb">🟡 Gelb (Warnung)</option>
+                <option value="Grün">🟢 Grün (Sicher)</option>
+              </select>
+            </div>
+            <div class="filter-info">
+              <span id="assetFilterCount">0</span> Assets gefunden
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Typ</th>
+                  <th>Location</th>
+                  <th>Owner</th>
+                  <th>Vuln-Index</th>
+                  <th>Zone</th>
+                  <th>Aktionen</th>
+                </tr>
+              </thead>
+              <tbody id="assetTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Incidents Page -->
+        <section id="page-incidents" class="page">
+          <div class="page-header">
+            <div class="page-header-left">
+              <h2>Incident Reporting</h2>
+              <p class="page-description">Vorfallserfassung und -verfolgung</p>
+            </div>
+            <button id="btnAddIncident" class="btn btn-accent">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14M5 12h14"/>
+              </svg>
+              Neuer Vorfall
+            </button>
+          </div>
+
+          <div class="filters-bar">
+            <div class="filter-group">
+              <div class="search-input">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"/>
+                  <path d="m21 21-4.35-4.35"/>
+                </svg>
+                <input type="text" id="incidentSearch" placeholder="Vorfall suchen..." />
+              </div>
+              <select id="incidentCategoryFilter" class="filter-select">
+                <option value="">Alle Kategorien</option>
+                <option value="Security-Vorfälle">Security-Vorfälle</option>
+                <option value="Safety-Vorfälle">Safety-Vorfälle</option>
+                <option value="Compliance">Compliance</option>
+                <option value="Datenschutz">Datenschutz</option>
+                <option value="Brandschutz">Brandschutz</option>
+                <option value="IT-Vorfälle">IT-Vorfälle</option>
+              </select>
+              <select id="incidentStatusFilter" class="filter-select">
+                <option value="">Alle Status</option>
+                <option value="offen">🔴 Offen</option>
+                <option value="in Bearbeitung">🟡 In Bearbeitung</option>
+                <option value="geschlossen">🟢 Geschlossen</option>
+              </select>
+            </div>
+            <div class="filter-info">
+              <span id="incidentFilterCount">0</span> Vorfälle gefunden
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Datum/Zeit</th>
+                  <th>Ort</th>
+                  <th>Kategorie</th>
+                  <th>Art</th>
+                  <th>Schweregrad</th>
+                  <th>Status</th>
+                  <th>Aktionen</th>
+                </tr>
+              </thead>
+              <tbody id="incidentTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Matrix Page -->
+        <section id="page-matrix" class="page">
+          <div class="page-header">
+            <div class="page-header-left">
+              <h2>Risikomatrix</h2>
+              <p class="page-description">Visuelle Risikodarstellung nach Wahrscheinlichkeit und Auswirkung</p>
+            </div>
+          </div>
+
+          <div class="matrix-container">
+            <div class="matrix-wrapper">
+              <div class="matrix-y-label">
+                <span>Auswirkung</span>
+                <div class="matrix-y-scale">
+                  <span>Hoch</span>
+                  <span>Mittel</span>
+                  <span>Niedrig</span>
+                </div>
+              </div>
+              <div class="matrix-grid-wrapper">
+                <div id="riskMatrix" class="risk-matrix-grid"></div>
+                <div class="matrix-x-label">
+                  <div class="matrix-x-scale">
+                    <span>Niedrig</span>
+                    <span>Mittel</span>
+                    <span>Hoch</span>
+                  </div>
+                  <span>Wahrscheinlichkeit</span>
+                </div>
+              </div>
+            </div>
+            <div class="matrix-legend">
+              <div class="legend-item">
+                <div class="legend-color low"></div>
+                <span>Niedriges Risiko (1-24)</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-color medium"></div>
+                <span>Mittleres Risiko (25-49)</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-color high"></div>
+                <span>Hohes Risiko (50-79)</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-color critical"></div>
+                <span>Kritisches Risiko (80-100)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="matrix-details">
+            <div class="card-header">
+              <h3>Risiken in Matrix</h3>
+            </div>
+            <div class="matrix-risk-list" id="matrixRiskList"></div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- Risk Modal -->
+  <div id="riskModal" class="modal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2 id="riskModalTitle">Neues Risiko</h2>
+        <button id="riskModalClose" class="modal-close">&times;</button>
+      </div>
+      <form id="riskForm" class="modal-form">
+        <input type="hidden" id="riskId" />
+        
+        <div class="form-section">
+          <h4>Grundinformationen</h4>
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label for="riskName">Risikoname</label>
+              <input type="text" id="riskName" required placeholder="Beschreibender Name des Risikos" />
+            </div>
+            <div class="form-group">
+              <label for="riskType">Risikoart</label>
+              <select id="riskType" required>
+                <option value="">Bitte wählen</option>
+                <option value="Security">Security</option>
+                <option value="Safety">Safety</option>
+                <option value="Compliance">Compliance</option>
+                <option value="Datenschutz">Datenschutz</option>
+                <option value="Brandschutz">Brandschutz</option>
+                <option value="IT">IT-Risiken</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="riskPriority">Priorität</label>
+              <select id="riskPriority" required>
+                <option value="Niedrig">Niedrig</option>
+                <option value="Akzeptabel">Akzeptabel</option>
+                <option value="Moderat">Moderat</option>
+                <option value="Hoch">Hoch</option>
+                <option value="Kritisch">Kritisch</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="riskStatus">Status</label>
+              <select id="riskStatus" required>
+                <option value="Not Started">Not Started</option>
+                <option value="Ongoing">Ongoing</option>
+                <option value="Erledigt">Erledigt</option>
+              </select>
+            </div>
+            <div class="form-group full-width">
+              <label for="riskDescription">Kurzbeschreibung</label>
+              <textarea id="riskDescription" rows="3" placeholder="Detaillierte Beschreibung des Risikos..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h4>Eintrittswahrscheinlichkeit</h4>
+          <div class="form-grid">
+            <div class="form-group slider-group">
+              <label for="probFreq">Relative Eintrittshäufigkeit</label>
+              <div class="slider-wrapper">
+                <input type="range" id="probFreq" min="1" max="5" value="3" />
+                <span class="slider-value" id="probFreqVal">3</span>
+              </div>
+            </div>
+            <div class="form-group slider-group">
+              <label for="probControls">Sicherheitsmaßnahmen (5=gut)</label>
+              <div class="slider-wrapper">
+                <input type="range" id="probControls" min="1" max="5" value="3" />
+                <span class="slider-value" id="probControlsVal">3</span>
+              </div>
+            </div>
+            <div class="form-group slider-group">
+              <label for="probSigns">Anzeichen eines Schadensereignisses</label>
+              <div class="slider-wrapper">
+                <input type="range" id="probSigns" min="1" max="5" value="3" />
+                <span class="slider-value" id="probSignsVal">3</span>
+              </div>
+            </div>
+            <div class="form-group slider-group">
+              <label for="probComplexity">Angriffskomplexität</label>
+              <div class="slider-wrapper">
+                <input type="range" id="probComplexity" min="1" max="5" value="3" />
+                <span class="slider-value" id="probComplexityVal">3</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h4>Schadenausmaß</h4>
+          <div class="form-grid">
+            <div class="form-group slider-group">
+              <label for="impPeople">Personenschäden</label>
+              <div class="slider-wrapper">
+                <input type="range" id="impPeople" min="1" max="5" value="3" />
+                <span class="slider-value" id="impPeopleVal">3</span>
+              </div>
+            </div>
+            <div class="form-group slider-group">
+              <label for="impAssets">Sachschäden</label>
+              <div class="slider-wrapper">
+                <input type="range" id="impAssets" min="1" max="5" value="3" />
+                <span class="slider-value" id="impAssetsVal">3</span>
+              </div>
+            </div>
+            <div class="form-group slider-group">
+              <label for="impReputation">Immaterielle Schäden</label>
+              <div class="slider-wrapper">
+                <input type="range" id="impReputation" min="1" max="5" value="3" />
+                <span class="slider-value" id="impReputationVal">3</span>
+              </div>
+            </div>
+            <div class="form-group slider-group">
+              <label for="impLegal">Rechtliche Konsequenzen</label>
+              <div class="slider-wrapper">
+                <input type="range" id="impLegal" min="1" max="5" value="3" />
+                <span class="slider-value" id="impLegalVal">3</span>
+              </div>
+            </div>
+            <div class="form-group slider-group">
+              <label for="impResilience">Interner Resistenzlevel (5=gut)</label>
+              <div class="slider-wrapper">
+                <input type="range" id="impResilience" min="1" max="5" value="3" />
+                <span class="slider-value" id="impResilienceVal">3</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section results-section">
+          <h4>Berechnete Werte</h4>
+          <div class="calculated-values">
+            <div class="calc-item">
+              <span class="calc-label">Eintritts-Rating</span>
+              <input type="text" id="probRating" readonly class="calc-value" />
+            </div>
+            <div class="calc-item">
+              <span class="calc-label">Schadens-Rating</span>
+              <input type="text" id="impRating" readonly class="calc-value" />
+            </div>
+            <div class="calc-item highlight">
+              <span class="calc-label">Risikowert</span>
+              <input type="text" id="riskScore" readonly class="calc-value" />
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="riskCancel" class="btn btn-secondary">Abbrechen</button>
+          <button type="submit" class="btn btn-primary">Speichern</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Asset Modal -->
+  <div id="assetModal" class="modal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2 id="assetModalTitle">Neues Asset</h2>
+        <button id="assetModalClose" class="modal-close">&times;</button>
+      </div>
+      <form id="assetForm" class="modal-form">
+        <input type="hidden" id="assetId" />
+        
+        <div class="form-section">
+          <h4>Asset-Informationen</h4>
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label for="assetName">Asset-Name</label>
+              <input type="text" id="assetName" required placeholder="Name des Assets" />
+            </div>
+            <div class="form-group">
+              <label for="assetType">Asset-Typ</label>
+              <input type="text" id="assetType" placeholder="z.B. Gebäude, Server" />
+            </div>
+            <div class="form-group">
+              <label for="assetLocation">Location</label>
+              <input type="text" id="assetLocation" placeholder="Standort / Bereich" />
+            </div>
+            <div class="form-group full-width">
+              <label for="assetOwner">Owner</label>
+              <input type="text" id="assetOwner" placeholder="Verantwortliche Person/Abteilung" />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h4>Bewertung</h4>
+          <div class="form-grid">
+            <div class="form-group slider-group">
+              <label for="assetCriticality">Kritikalität (1-10)</label>
+              <div class="slider-wrapper wide">
+                <input type="range" id="assetCriticality" min="1" max="10" value="5" />
+                <span class="slider-value" id="assetCriticalityVal">5</span>
+              </div>
+            </div>
+            <div class="form-group slider-group">
+              <label for="assetProtection">Schutzstatus (1-10, 10=sehr gut)</label>
+              <div class="slider-wrapper wide">
+                <input type="range" id="assetProtection" min="1" max="10" value="5" />
+                <span class="slider-value" id="assetProtectionVal">5</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section results-section">
+          <h4>Berechnete Werte</h4>
+          <div class="calculated-values">
+            <div class="calc-item">
+              <span class="calc-label">Vulnerabilitäts-Index</span>
+              <input type="text" id="assetVulnIndex" readonly class="calc-value" />
+            </div>
+            <div class="calc-item">
+              <span class="calc-label">Zone</span>
+              <input type="text" id="assetZone" readonly class="calc-value zone-display" />
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="assetCancel" class="btn btn-secondary">Abbrechen</button>
+          <button type="submit" class="btn btn-primary">Speichern</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Incident Modal -->
+  <div id="incidentModal" class="modal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2 id="incidentModalTitle">Neuer Vorfall</h2>
+        <button id="incidentModalClose" class="modal-close">&times;</button>
+      </div>
+      <form id="incidentForm" class="modal-form">
+        <input type="hidden" id="incidentId" />
+        
+        <div class="form-section">
+          <h4>Vorfall-Details</h4>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="incidentDatetime">Datum & Uhrzeit</label>
+              <input type="datetime-local" id="incidentDatetime" required />
+            </div>
+            <div class="form-group">
+              <label for="incidentLocation">Ort</label>
+              <input type="text" id="incidentLocation" required placeholder="Wo ist der Vorfall passiert?" />
+            </div>
+            <div class="form-group">
+              <label for="incidentCategory">Kategorie</label>
+              <select id="incidentCategory" required>
+                <option value="">Bitte wählen</option>
+                <option value="Security-Vorfälle">Security-Vorfälle</option>
+                <option value="Safety-Vorfälle">Safety-Vorfälle</option>
+                <option value="Compliance">Compliance</option>
+                <option value="Datenschutz">Datenschutz</option>
+                <option value="Brandschutz">Brandschutz</option>
+                <option value="IT-Vorfälle">IT-Vorfälle</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="incidentType">Art des Vorfalls</label>
+              <input type="text" id="incidentType" required placeholder="z.B. Einbruch, Unfall" />
+            </div>
+            <div class="form-group">
+              <label for="incidentReporter">Meldende Person</label>
+              <input type="text" id="incidentReporter" placeholder="Name der meldenden Person" />
+            </div>
+            <div class="form-group">
+              <label for="incidentSeverity">Schweregrad</label>
+              <select id="incidentSeverity" required>
+                <option value="Niedrig">Niedrig</option>
+                <option value="Mittel">Mittel</option>
+                <option value="Hoch">Hoch</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="incidentStatus">Status</label>
+              <select id="incidentStatus" required>
+                <option value="offen">Offen</option>
+                <option value="in Bearbeitung">In Bearbeitung</option>
+                <option value="geschlossen">Geschlossen</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="incidentOwner">Verantwortliche Person</label>
+              <input type="text" id="incidentOwner" placeholder="Wer bearbeitet den Vorfall?" />
+            </div>
+            <div class="form-group full-width">
+              <label for="incidentDescription">Beschreibung</label>
+              <textarea id="incidentDescription" rows="4" placeholder="Detaillierte Beschreibung des Vorfalls..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="incidentCancel" class="btn btn-secondary">Abbrechen</button>
+          <button type="submit" class="btn btn-accent">Speichern</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
