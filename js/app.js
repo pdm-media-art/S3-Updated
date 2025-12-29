@@ -36,6 +36,209 @@ function showToast(type, title, message) {
 
 function removeToast(toast) { toast.classList.add("removing"); setTimeout(() => toast.remove(), 300); }
 
+// ===========================
+// Notification Panel
+// ===========================
+let notifications = [];
+
+function generateNotifications() {
+  notifications = [];
+  
+  // Generate notifications from risks
+  risks.forEach(risk => {
+    if (risk.status !== "Erledigt") {
+      notifications.push({
+        id: `risk-${risk.id}`,
+        type: risk.priority === "Kritisch" ? "danger" : risk.priority === "Hoch" ? "warning" : "info",
+        title: `Risiko: ${risk.name}`,
+        desc: risk.description || `${risk.type} - Risikowert: ${risk.riskScore}`,
+        time: new Date(Date.now() - Math.random() * 86400000 * 3),
+        read: false,
+        category: "risk"
+      });
+    }
+  });
+  
+  // Generate notifications from incidents
+  incidents.forEach(incident => {
+    if (incident.status === "offen" || incident.status === "in Bearbeitung") {
+      notifications.push({
+        id: `incident-${incident.id}`,
+        type: incident.severity === "Hoch" ? "danger" : incident.severity === "Mittel" ? "warning" : "info",
+        title: `Vorfall: ${incident.type}`,
+        desc: `${incident.location} - ${incident.category}`,
+        time: new Date(incident.datetime),
+        read: false,
+        category: "incident"
+      });
+    }
+  });
+  
+  // Sort by time (newest first)
+  notifications.sort((a, b) => b.time - a.time);
+}
+
+function renderNotificationPanel() {
+  const container = document.getElementById("notificationList");
+  if (!container) return;
+  
+  generateNotifications();
+  container.innerHTML = "";
+  
+  if (notifications.length === 0) {
+    container.innerHTML = `
+      <div style="padding: 40px; text-align: center;">
+        <svg style="width: 48px; height: 48px; color: var(--text-dim); margin-bottom: 12px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 01-3.46 0"/>
+        </svg>
+        <div style="color: var(--text-muted); font-size: 0.875rem;">Keine neuen Benachrichtigungen</div>
+      </div>
+    `;
+    return;
+  }
+  
+  notifications.slice(0, 8).forEach(notif => {
+    const icons = {
+      danger: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>`,
+      warning: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>`,
+      success: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>`,
+      info: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>`
+    };
+    
+    const item = document.createElement("div");
+    item.className = `notification-item${notif.read ? "" : " unread"}`;
+    item.innerHTML = `
+      <div class="notification-icon ${notif.type}">${icons[notif.type]}</div>
+      <div class="notification-content">
+        <div class="notification-title">${notif.title}</div>
+        <div class="notification-desc">${notif.desc}</div>
+        <div class="notification-time">${formatRelativeTime(notif.time)}</div>
+      </div>
+    `;
+    
+    item.addEventListener("click", () => {
+      notif.read = true;
+      item.classList.remove("unread");
+      updateNotificationBadge();
+      
+      // Navigate to relevant page
+      if (notif.category === "risk") {
+        navigateToPage("threats");
+      } else if (notif.category === "incident") {
+        navigateToPage("incidents");
+      }
+      
+      closeAllPanels();
+    });
+    
+    container.appendChild(item);
+  });
+}
+
+function updateNotificationBadge() {
+  const badge = document.getElementById("notificationBadge");
+  if (!badge) return;
+  
+  const unreadCount = notifications.filter(n => !n.read).length;
+  badge.textContent = unreadCount;
+  badge.style.display = unreadCount > 0 ? "flex" : "none";
+}
+
+function initNotificationPanel() {
+  const btn = document.getElementById("notificationBtn");
+  const panel = document.getElementById("notificationPanel");
+  const markAllBtn = document.getElementById("markAllRead");
+  const viewAllBtn = document.getElementById("viewAllNotifications");
+  
+  if (btn && panel) {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isOpen = panel.classList.contains("open");
+      closeAllPanels();
+      
+      if (!isOpen) {
+        panel.classList.add("open");
+        renderNotificationPanel();
+      }
+    });
+  }
+  
+  if (markAllBtn) {
+    markAllBtn.addEventListener("click", () => {
+      notifications.forEach(n => n.read = true);
+      renderNotificationPanel();
+      updateNotificationBadge();
+      showToast("success", "Erledigt", "Alle Benachrichtigungen als gelesen markiert");
+    });
+  }
+  
+  if (viewAllBtn) {
+    viewAllBtn.addEventListener("click", () => {
+      closeAllPanels();
+      // Could navigate to a dedicated notifications page
+      showToast("info", "Info", "Benachrichtigungsübersicht wird geladen...");
+    });
+  }
+}
+
+// ===========================
+// User Menu
+// ===========================
+function initUserMenu() {
+  const avatar = document.getElementById("userAvatarBtn");
+  const menu = document.getElementById("userMenu");
+  
+  if (avatar && menu) {
+    avatar.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isOpen = menu.classList.contains("open");
+      closeAllPanels();
+      
+      if (!isOpen) {
+        menu.classList.add("open");
+      }
+    });
+  }
+  
+  // Handle menu item clicks
+  const menuItems = document.querySelectorAll(".user-menu-item");
+  menuItems.forEach(item => {
+    item.addEventListener("click", () => {
+      const text = item.textContent.trim();
+      closeAllPanels();
+      
+      if (text.includes("Profil")) {
+        showToast("info", "Profil", "Profilseite wird geladen...");
+      } else if (text.includes("Einstellungen")) {
+        showToast("info", "Einstellungen", "Einstellungen werden geöffnet...");
+      } else if (text.includes("Berichte")) {
+        showToast("info", "Berichte", "Berichtsübersicht wird geladen...");
+      } else if (text.includes("Abmelden")) {
+        showToast("warning", "Abmelden", "Sie werden abgemeldet...");
+      }
+    });
+  });
+}
+
+function closeAllPanels() {
+  const notifPanel = document.getElementById("notificationPanel");
+  const userMenu = document.getElementById("userMenu");
+  
+  if (notifPanel) notifPanel.classList.remove("open");
+  if (userMenu) userMenu.classList.remove("open");
+}
+
+// Close panels when clicking outside
+document.addEventListener("click", (e) => {
+  if (!e.target.closest(".notification-panel") && 
+      !e.target.closest("#notificationBtn") &&
+      !e.target.closest(".user-menu") &&
+      !e.target.closest("#userAvatarBtn")) {
+    closeAllPanels();
+  }
+});
+
 const pageTitles = {
   dashboard: { title: "Dashboard", breadcrumb: "Übersicht / Sicherheitsanalyse" },
   threats: { title: "Threat Sheet", breadcrumb: "Analyse / Risikomanagement" },
@@ -448,6 +651,8 @@ document.addEventListener("DOMContentLoaded", () => {
   initAssetFilters();
   initIncidentModal();
   initIncidentFilters();
+  initNotificationPanel();
+  initUserMenu();
   
   // Load demo data
   seedDemoData();
@@ -459,6 +664,10 @@ document.addEventListener("DOMContentLoaded", () => {
   renderAssetTable();
   renderIncidentTable();
   updateDashboard();
+  
+  // Generate and update notifications
+  generateNotifications();
+  updateNotificationBadge();
   
   // Draw charts
   setTimeout(() => {
